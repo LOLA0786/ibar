@@ -1,15 +1,14 @@
+from app.core.rules import evaluate_rules
 from app.models.regulatory import RegulatoryTrace
 
 def shadow_evaluate(user_id, venue_id, country, state, pour_ml):
-    # Shadow mode — never blocks unless obvious
-    block = False
-    reason = "ALLOW"
-
-    if country == "IN" and state == "GJ":
-        block = True
-        reason = "STATE_PROHIBITION"
+    allowed, reason = evaluate_rules(
+        country,
+        state,
+        {"pour_ml": pour_ml}
+    )
 
     return {
-        "block": block,
+        "block": not allowed,
         "reason": reason
     }
